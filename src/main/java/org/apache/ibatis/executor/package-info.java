@@ -14,6 +14,9 @@
  *    limitations under the License.
  */
 /**
+ * 执⾏器包，它作为 MyBatis 的核⼼将其他各个包凝聚在了⼀起。在该包的⼯作中，会调⽤配置解析包
+ * 解析出的配置信息，会依赖基础包中提供的基础功能。最终，executor包将所有的操作串接在了⼀起，通过 session包向外暴露
+ * 出⼀套完整的服务。
  * Contains the statement executors.
  */
 package org.apache.ibatis.executor;

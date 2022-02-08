@@ -28,14 +28,32 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
+ * 元对象
+ * MetaObject类理解为⼀个涵盖对象（Object）中更多细节信息和功能的类，称为“元对象”。
+ *
  * @author Clinton Begin
  */
 public class MetaObject {
 
+  /**
+   * 原始对象
+   */
   private final Object originalObject;
+  /**
+   * 对象包装器
+   */
   private final ObjectWrapper objectWrapper;
+  /**
+   * 对象工厂
+   */
   private final ObjectFactory objectFactory;
+  /**
+   * 对象包装器工厂
+   */
   private final ObjectWrapperFactory objectWrapperFactory;
+  /**
+   * 反射工厂
+   */
   private final ReflectorFactory reflectorFactory;
 
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {

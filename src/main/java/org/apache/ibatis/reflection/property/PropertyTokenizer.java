@@ -18,6 +18,10 @@ package org.apache.ibatis.reflection.property;
 import java.util.Iterator;
 
 /**
+ * 属性标记器
+ * PropertyTokenizer 是⼀个属性标记器。传⼊⼀个形如“student[sId].name”的字符串后，该标记器会将其拆分开，放⼊各个属性
+ * 中。
+ *
  * @author Clinton Begin
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {

@@ -43,6 +43,8 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * 反射核心类
+ * Reflector 类负责对⼀个类进⾏反射解析，并将解析后的结果在属性中存储起来。
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  *
@@ -50,25 +52,58 @@ import org.apache.ibatis.util.MapUtil;
  */
 public class Reflector {
 
+  /**
+   * 要被反解析的类
+   */
   private final Class<?> type;
+  /**
+   * 可读属性列表（有get方法属性列表）
+   */
   private final String[] readablePropertyNames;
+  /**
+   * 可写属性列表（有set方法属性列表）
+   */
   private final String[] writablePropertyNames;
+  /**
+   * set方法映射表
+   */
   private final Map<String, Invoker> setMethods = new HashMap<>();
+  /**
+   * get方法映射表
+   */
   private final Map<String, Invoker> getMethods = new HashMap<>();
+  /**
+   * set方法输入类型
+   */
   private final Map<String, Class<?>> setTypes = new HashMap<>();
+  /**
+   * get方法输出类型
+   */
   private final Map<String, Class<?>> getTypes = new HashMap<>();
+  /**
+   * 默认构造器
+   */
   private Constructor<?> defaultConstructor;
-
+  /**
+   * 不区分大小写的属性映射
+   */
   private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
   public Reflector(Class<?> clazz) {
+    //要被反射解析的类
     type = clazz;
+    //添加默认构造器
     addDefaultConstructor(clazz);
     Method[] classMethods = getClassMethods(clazz);
+    //添加get方法
     addGetMethods(classMethods);
+    //添加set方法
     addSetMethods(classMethods);
+    //添加字段
     addFields(clazz);
+    //设置可读属性
     readablePropertyNames = getMethods.keySet().toArray(new String[0]);
+    //设置可写属性
     writablePropertyNames = setMethods.keySet().toArray(new String[0]);
     for (String propName : readablePropertyNames) {
       caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
@@ -125,10 +160,10 @@ public class Reflector {
 
   private void addGetMethod(String name, Method method, boolean isAmbiguous) {
     MethodInvoker invoker = isAmbiguous
-        ? new AmbiguousMethodInvoker(method, MessageFormat.format(
-            "Illegal overloaded getter method with ambiguous type for property ''{0}'' in class ''{1}''. This breaks the JavaBeans specification and can cause unpredictable results.",
-            name, method.getDeclaringClass().getName()))
-        : new MethodInvoker(method);
+      ? new AmbiguousMethodInvoker(method, MessageFormat.format(
+      "Illegal overloaded getter method with ambiguous type for property ''{0}'' in class ''{1}''. This breaks the JavaBeans specification and can cause unpredictable results.",
+      name, method.getDeclaringClass().getName()))
+      : new MethodInvoker(method);
     getMethods.put(name, invoker);
     Type returnType = TypeParameterResolver.resolveReturnType(method, type);
     getTypes.put(name, typeToClass(returnType));
@@ -185,9 +220,9 @@ public class Reflector {
       return setter1;
     }
     MethodInvoker invoker = new AmbiguousMethodInvoker(setter1,
-        MessageFormat.format(
-            "Ambiguous setters defined for property ''{0}'' in class ''{1}'' with types ''{2}'' and ''{3}''.",
-            property, setter2.getDeclaringClass().getName(), paramType1.getName(), paramType2.getName()));
+      MessageFormat.format(
+        "Ambiguous setters defined for property ''{0}'' in class ''{1}'' with types ''{2}'' and ''{3}''.",
+        property, setter2.getDeclaringClass().getName(), paramType1.getName(), paramType2.getName()));
     setMethods.put(property, invoker);
     Type[] paramTypes = TypeParameterResolver.resolveParamTypes(setter1, type);
     setTypes.put(property, typeToClass(paramTypes[0]));

@@ -21,6 +21,8 @@ import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
+ * SystemMetaObject是⼀个只能使⽤默认值的 MetaObject⼯⼚。
+ *
  * @author Clinton Begin
  */
 public final class SystemMetaObject {

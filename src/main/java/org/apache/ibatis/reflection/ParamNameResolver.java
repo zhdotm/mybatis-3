@@ -31,13 +31,20 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+/**
+ * 参数名称解析器
+ */
 public class ParamNameResolver {
 
   public static final String GENERIC_NAME_PREFIX = "param";
 
+  /**
+   * 是否使用实际参数名称
+   */
   private final boolean useActualParamName;
 
   /**
+   * 参数序列名称有序映射
    * <p>
    * The key is the index and the value is the name of the parameter.<br />
    * The name is obtained from {@link Param} if specified. When {@link Param} is not specified,
@@ -52,6 +59,9 @@ public class ParamNameResolver {
    */
   private final SortedMap<Integer, String> names;
 
+  /**
+   * 是否有参数注解
+   */
   private boolean hasParamAnnotation;
 
   public ParamNameResolver(Configuration config, Method method) {
@@ -68,6 +78,7 @@ public class ParamNameResolver {
       }
       String name = null;
       for (Annotation annotation : paramAnnotations[paramIndex]) {
+        //有使用@Param注解，使用注解值
         if (annotation instanceof Param) {
           hasParamAnnotation = true;
           name = ((Param) annotation).value();
@@ -76,9 +87,11 @@ public class ParamNameResolver {
       }
       if (name == null) {
         // @Param was not specified.
+        //使用实际参数名称
         if (useActualParamName) {
           name = getActualParamName(method, paramIndex);
         }
+        //使用参数索引位置作为参数名称
         if (name == null) {
           // use the parameter index as the name ("0", "1", ...)
           // gcode issue #71
@@ -115,8 +128,7 @@ public class ParamNameResolver {
    * ...).
    * </p>
    *
-   * @param args
-   *          the args
+   * @param args the args
    * @return the named params
    */
   public Object getNamedParams(Object[] args) {
@@ -146,7 +158,7 @@ public class ParamNameResolver {
   /**
    * Wrap to a {@link ParamMap} if object is {@link Collection} or array.
    *
-   * @param object a parameter object
+   * @param object          a parameter object
    * @param actualParamName an actual parameter name
    *                        (If specify a name, set an object to {@link ParamMap} with specified name)
    * @return a {@link ParamMap}

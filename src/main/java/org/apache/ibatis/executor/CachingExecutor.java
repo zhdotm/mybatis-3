@@ -33,6 +33,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * ⼆级缓存功能由 CachingExecutor类实现，它是⼀个装饰器类，能通过装饰实际执⾏器为它们增加⼆级缓存功能。
+ * 在 Configuration的 newExecutor⽅法中，MyBatis会根据配置⽂件中的⼆级缓存开关配置⽤ CachingExecutor类装饰实际执⾏器。
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
@@ -91,7 +94,7 @@ public class CachingExecutor implements Executor {
 
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-      throws SQLException {
+    throws SQLException {
     Cache cache = ms.getCache();
     if (cache != null) {
       flushCacheIfRequired(ms);

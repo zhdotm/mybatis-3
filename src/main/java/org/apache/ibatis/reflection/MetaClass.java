@@ -27,6 +27,9 @@ import org.apache.ibatis.reflection.invoker.MethodInvoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * 元类
+ * MetaClass就是⼀个涵盖了类型（Class）中更多细节信息和功能的类，称为“元类”。
+ *
  * @author Clinton Begin
  */
 public class MetaClass {

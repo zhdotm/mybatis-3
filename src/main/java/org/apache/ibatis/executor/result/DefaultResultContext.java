@@ -18,12 +18,23 @@ package org.apache.ibatis.executor.result;
 import org.apache.ibatis.session.ResultContext;
 
 /**
+ * DefaultResultContext ⽤来存储⼀个结果对象，对应数据库中的⼀条记录
+ *
  * @author Clinton Begin
  */
 public class DefaultResultContext<T> implements ResultContext<T> {
 
+  /**
+   * 结果对象
+   */
   private T resultObject;
+  /**
+   * 结果计数（表明这是第几个结果对象）
+   */
   private int resultCount;
+  /**
+   * 使用完毕，结果已经被取走
+   */
   private boolean stopped;
 
   public DefaultResultContext() {

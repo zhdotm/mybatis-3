@@ -16,10 +16,17 @@
 package org.apache.ibatis.session;
 
 /**
+ * ResultHandler接口表⽰结果处理器，数据库操作结果会由它处理。因此说，ResultHandler会负责处理ResultContext
+ *
  * @author Clinton Begin
  */
 public interface ResultHandler<T> {
 
+  /**
+   * 处理结果上下文
+   *
+   * @param resultContext
+   */
   void handleResult(ResultContext<? extends T> resultContext);
 
 }

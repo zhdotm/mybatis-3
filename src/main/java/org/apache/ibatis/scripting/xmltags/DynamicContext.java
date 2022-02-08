@@ -27,6 +27,9 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 在进⾏ SQL节点树的解析时，需要不断保存已经解析完成的 SQL⽚段；
+ * 另⼀⽅⾯，在进⾏SQL节点树的解析时也需要⼀些参数和环境信息作为解析的依据。以上这两个功能是由动态上下⽂ DynamicContext提供的。
+ *
  * @author Clinton Begin
  */
 public class DynamicContext {
@@ -38,14 +41,32 @@ public class DynamicContext {
     OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
   }
 
+  /**
+   * 上下文环境
+   */
   private final ContextMap bindings;
+  /**
+   * 用于拼装sql语句片段
+   */
   private final StringJoiner sqlBuilder = new StringJoiner(" ");
+  /**
+   * 解析时的唯一编号，防止解析混乱
+   */
   private int uniqueNumber = 0;
 
+  /**
+   * 构造参数
+   *
+   * @param configuration   配置信息
+   * @param parameterObject 用户传入的查询参数对象
+   */
   public DynamicContext(Configuration configuration, Object parameterObject) {
     if (parameterObject != null && !(parameterObject instanceof Map)) {
+      //获得参数对象的元对象
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
+      //判断参数对象是否有对应的处理器
       boolean existsTypeHandler = configuration.getTypeHandlerRegistry().hasTypeHandler(parameterObject.getClass());
+      //放入上下文
       bindings = new ContextMap(metaObject, existsTypeHandler);
     } else {
       bindings = new ContextMap(null, false);
@@ -117,7 +138,7 @@ public class DynamicContext {
 
       Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
       if (parameterObject instanceof Map) {
-        return ((Map)parameterObject).get(name);
+        return ((Map) parameterObject).get(name);
       }
 
       return null;

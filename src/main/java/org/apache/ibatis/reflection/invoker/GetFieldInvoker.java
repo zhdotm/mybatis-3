@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 获取字段执行器
+ *
  * @author Clinton Begin
  */
 public class GetFieldInvoker implements Invoker {
@@ -29,6 +31,14 @@ public class GetFieldInvoker implements Invoker {
     this.field = field;
   }
 
+  /**
+   * 获取指定对象的字段值
+   *
+   * @param target
+   * @param args
+   * @return
+   * @throws IllegalAccessException
+   */
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException {
     try {
@@ -43,6 +53,11 @@ public class GetFieldInvoker implements Invoker {
     }
   }
 
+  /**
+   * 获取字段类型
+   *
+   * @return 字段类型
+   */
   @Override
   public Class<?> getType() {
     return field.getType();

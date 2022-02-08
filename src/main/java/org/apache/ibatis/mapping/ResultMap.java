@@ -32,15 +32,35 @@ import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * ResultMap类就是 resultMap节点对应的解析实体类，其属性和 resultMap节点的信息⾼度⼀致。
+ *
  * @author Clinton Begin
  */
 public class ResultMap {
+  /**
+   * 全局配置信息
+   */
   private Configuration configuration;
 
+  /**
+   * resultMap编号
+   */
   private String id;
+  /**
+   * 最终输出结果对应的java类
+   */
   private Class<?> type;
+  /**
+   * XML中的<result></result>列表
+   */
   private List<ResultMapping> resultMappings;
+  /**
+   * XML中的<id></id>、<idArg></idArg>列表
+   */
   private List<ResultMapping> idResultMappings;
+  /**
+   * XML中的<constructor></constructor>中各个属性的列表
+   */
   private List<ResultMapping> constructorResultMappings;
   private List<ResultMapping> propertyResultMappings;
   private Set<String> mappedColumns;
@@ -126,9 +146,9 @@ public class ResultMap {
         final List<String> actualArgNames = argNamesOfMatchingConstructor(constructorArgNames);
         if (actualArgNames == null) {
           throw new BuilderException("Error in result map '" + resultMap.id
-              + "'. Failed to find a constructor in '"
-              + resultMap.getType().getName() + "' by arg names " + constructorArgNames
-              + ". There might be more info in debug log.");
+            + "'. Failed to find a constructor in '"
+            + resultMap.getType().getName() + "' by arg names " + constructorArgNames
+            + ". There might be more info in debug log.");
         }
         resultMap.constructorResultMappings.sort((o1, o2) -> {
           int paramIdx1 = actualArgNames.indexOf(o1.getProperty());
@@ -152,7 +172,7 @@ public class ResultMap {
         if (constructorArgNames.size() == paramTypes.length) {
           List<String> paramNames = getArgNames(constructor);
           if (constructorArgNames.containsAll(paramNames)
-              && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
+            && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
             return paramNames;
           }
         }
@@ -161,17 +181,17 @@ public class ResultMap {
     }
 
     private boolean argTypesMatch(final List<String> constructorArgNames,
-        Class<?>[] paramTypes, List<String> paramNames) {
+                                  Class<?>[] paramTypes, List<String> paramNames) {
       for (int i = 0; i < constructorArgNames.size(); i++) {
         Class<?> actualType = paramTypes[paramNames.indexOf(constructorArgNames.get(i))];
         Class<?> specifiedType = resultMap.constructorResultMappings.get(i).getJavaType();
         if (!actualType.equals(specifiedType)) {
           if (log.isDebugEnabled()) {
             log.debug("While building result map '" + resultMap.id
-                + "', found a constructor with arg names " + constructorArgNames
-                + ", but the type of '" + constructorArgNames.get(i)
-                + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: ["
-                + actualType.getName() + "]");
+              + "', found a constructor with arg names " + constructorArgNames
+              + ", but the type of '" + constructorArgNames.get(i)
+              + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: ["
+              + actualType.getName() + "]");
           }
           return false;
         }

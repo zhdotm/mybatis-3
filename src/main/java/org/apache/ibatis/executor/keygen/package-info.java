@@ -14,6 +14,9 @@
  *    limitations under the License.
  */
 /**
+ * 主键生成
+ * MyBatis 中的 KeyGenerator 实现类共有三种：Jdbc3KeyGenerator、SelectKeyGenerator、
+ * NoKeyGenerator。在实际使⽤时，这三种实现类中只能有⼀种实现类⽣效。
  * Contains the key generators.
  */
 package org.apache.ibatis.executor.keygen;

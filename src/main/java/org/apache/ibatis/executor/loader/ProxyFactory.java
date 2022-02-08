@@ -22,10 +22,17 @@ import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * ProxyFactory是创建代理类的⼯⼚接口，其中的 setProperties⽅法⽤来对⼯⼚进⾏属性设置。
+ *
  * @author Eduardo Macarron
  */
 public interface ProxyFactory {
 
+  /**
+   * 属性设置
+   *
+   * @param properties
+   */
   default void setProperties(Properties properties) {
     // NOP
   }

@@ -49,6 +49,8 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 类型处理器注册表，内部维护了所有类型与对应类型处理器的映射关系
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -182,6 +184,7 @@ public final class TypeHandlerRegistry {
   /**
    * Set a default {@link TypeHandler} class for {@link Enum}.
    * A default {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
+   *
    * @param typeHandler a type handler class for {@link Enum}
    * @since 3.4.5
    */

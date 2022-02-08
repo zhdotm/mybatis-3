@@ -21,6 +21,8 @@ import java.util.Map;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * Discriminator是 resultMap内部的鉴别器，就像程序中的选择语句⼀样，它使得数据查询结果能够根据某些条件的不同⽽进⾏不同的映射。
+ *
  * @author Clinton Begin
  */
 public class Discriminator {

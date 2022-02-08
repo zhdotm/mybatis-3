@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 设置字段执行期
+ *
  * @author Clinton Begin
  */
 public class SetFieldInvoker implements Invoker {
@@ -29,6 +31,14 @@ public class SetFieldInvoker implements Invoker {
     this.field = field;
   }
 
+  /**
+   * 给指定字段设置值
+   *
+   * @param target
+   * @param args
+   * @return
+   * @throws IllegalAccessException
+   */
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException {
     try {
@@ -44,6 +54,11 @@ public class SetFieldInvoker implements Invoker {
     return null;
   }
 
+  /**
+   * 获取字段类型
+   *
+   * @return
+   */
   @Override
   public Class<?> getType() {
     return field.getType();

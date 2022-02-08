@@ -21,6 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 模版设计模式
+ * 类型处理器接口
+ *
  * @author Clinton Begin
  */
 public interface TypeHandler<T> {
@@ -30,13 +33,10 @@ public interface TypeHandler<T> {
   /**
    * Gets the result.
    *
-   * @param rs
-   *          the rs
-   * @param columnName
-   *          Column name, when configuration <code>useColumnLabel</code> is <code>false</code>
+   * @param rs         the rs
+   * @param columnName Column name, when configuration <code>useColumnLabel</code> is <code>false</code>
    * @return the result
-   * @throws SQLException
-   *           the SQL exception
+   * @throws SQLException the SQL exception
    */
   T getResult(ResultSet rs, String columnName) throws SQLException;
 

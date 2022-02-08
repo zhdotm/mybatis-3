@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 有时我们想使⽤⾃⼰的处理器来处理某些 JDBC 类型，只需创建 BaseTypeHandler 的⼦类，然后在上⾯加上该注解，声明它要处理的JDBC类型即可
  * The annotation that specify jdbc types to map {@link TypeHandler}.
  *
  * <p>
@@ -32,6 +33,7 @@ import java.lang.annotation.Target;
  *   // ...
  * }
  * </pre>
+ *
  * @author Eduardo Macarron
  */
 @Documented

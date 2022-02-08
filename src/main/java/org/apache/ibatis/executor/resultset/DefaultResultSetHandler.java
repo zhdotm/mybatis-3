@@ -182,24 +182,36 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
 
+    //用以存储处理结果的列表
     final List<Object> multipleResults = new ArrayList<>();
 
+    //可能会有多个结果集，该变量用于对结果集进行计数
     int resultSetCount = 0;
+    //取出第一个结果集
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
+    //查询语句对应的resultMap可能有多个
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
     int resultMapCount = resultMaps.size();
+    //合法性校验
     validateResultMapsCount(rsw, resultMapCount);
+    //循环遍历每个设置了resultMap的结果集
     while (rsw != null && resultMapCount > resultSetCount) {
+      //获取当前结果集对应的resultMap
       ResultMap resultMap = resultMaps.get(resultSetCount);
+      //进行结果集的处理
       handleResultSet(rsw, resultMap, multipleResults, null);
+      //获取下个结果集
       rsw = getNextResultSet(stmt);
+      //清理上条结果集环境
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
 
+    //获取多结果集中所有结果集的名称
     String[] resultSets = mappedStatement.getResultSets();
     if (resultSets != null) {
+      //循环遍历每一个没有设置resultMap的结果集
       while (rsw != null && resultSetCount < resultSets.length) {
         ResultMapping parentMapping = nextResultMaps.get(resultSets[resultSetCount]);
         if (parentMapping != null) {
@@ -213,6 +225,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       }
     }
 
+    //判断是否是单结果集，如果是则返回结果列表，如果不是则返回结果集列表
     return collapseSingleResultList(multipleResults);
   }
 
@@ -288,15 +301,27 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private void validateResultMapsCount(ResultSetWrapper rsw, int resultMapCount) {
     if (rsw != null && resultMapCount < 1) {
       throw new ExecutorException("A query was run and no Result Maps were found for the Mapped Statement '" + mappedStatement.getId()
-          + "'.  It's likely that neither a Result Type nor a Result Map was specified.");
+        + "'.  It's likely that neither a Result Type nor a Result Map was specified.");
     }
   }
 
+  /**
+   * 处理单一结果集
+   *
+   * @param rsw             结果集包装对象
+   * @param resultMap       节点信息
+   * @param multipleResults 用来存储处理结果的列表
+   * @param parentMapping
+   * @throws SQLException
+   */
   private void handleResultSet(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults, ResultMapping parentMapping) throws SQLException {
     try {
+      //嵌套结果集
       if (parentMapping != null) {
+        //向子方法中传入parentMapping。处理结果中的记录
         handleRowValues(rsw, resultMap, null, RowBounds.DEFAULT, parentMapping);
       } else {
+        //非嵌套结果
         if (resultHandler == null) {
           DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
           handleRowValues(rsw, resultMap, defaultResultHandler, rowBounds, null);
@@ -333,20 +358,20 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private void ensureNoRowBounds() {
     if (configuration.isSafeRowBoundsEnabled() && rowBounds != null && (rowBounds.getLimit() < RowBounds.NO_ROW_LIMIT || rowBounds.getOffset() > RowBounds.NO_ROW_OFFSET)) {
       throw new ExecutorException("Mapped Statements with nested result mappings cannot be safely constrained by RowBounds. "
-          + "Use safeRowBoundsEnabled=false setting to bypass this check.");
+        + "Use safeRowBoundsEnabled=false setting to bypass this check.");
     }
   }
 
   protected void checkResultHandler() {
     if (resultHandler != null && configuration.isSafeResultHandlerEnabled() && !mappedStatement.isResultOrdered()) {
       throw new ExecutorException("Mapped Statements with nested result mappings cannot be safely used with a custom ResultHandler. "
-          + "Use safeResultHandlerEnabled=false setting to bypass this check "
-          + "or ensure your statement returns ordered data and set resultOrdered=true on it.");
+        + "Use safeResultHandlerEnabled=false setting to bypass this check "
+        + "or ensure your statement returns ordered data and set resultOrdered=true on it.");
     }
   }
 
   private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping)
-      throws SQLException {
+    throws SQLException {
     DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
     ResultSet resultSet = rsw.getResultSet();
     skipRows(resultSet, rowBounds);
@@ -465,7 +490,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   //
 
   private boolean applyPropertyMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, ResultLoaderMap lazyLoader, String columnPrefix)
-      throws SQLException {
+    throws SQLException {
     final List<String> mappedColumnNames = rsw.getMappedColumnNames(resultMap, columnPrefix);
     boolean foundValues = false;
     final List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();
@@ -476,8 +501,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         column = null;
       }
       if (propertyMapping.isCompositeResult()
-          || (column != null && mappedColumnNames.contains(column.toUpperCase(Locale.ENGLISH)))
-          || propertyMapping.getResultSet() != null) {
+        || (column != null && mappedColumnNames.contains(column.toUpperCase(Locale.ENGLISH)))
+        || propertyMapping.getResultSet() != null) {
         Object value = getPropertyMappingValue(rsw.getResultSet(), metaObject, propertyMapping, lazyLoader, columnPrefix);
         // issue #541 make property optional
         final String property = propertyMapping.getProperty();
@@ -500,7 +525,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private Object getPropertyMappingValue(ResultSet rs, MetaObject metaResultObject, ResultMapping propertyMapping, ResultLoaderMap lazyLoader, String columnPrefix)
-      throws SQLException {
+    throws SQLException {
     if (propertyMapping.getNestedQueryId() != null) {
       return getNestedQueryMappingValue(rs, metaResultObject, propertyMapping, lazyLoader, columnPrefix);
     } else if (propertyMapping.getResultSet() != null) {
@@ -541,11 +566,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             autoMapping.add(new UnMappedColumnAutoMapping(columnName, property, typeHandler, propertyType.isPrimitive()));
           } else {
             configuration.getAutoMappingUnknownColumnBehavior()
-                .doAction(mappedStatement, columnName, property, propertyType);
+              .doAction(mappedStatement, columnName, property, propertyType);
           }
         } else {
           configuration.getAutoMappingUnknownColumnBehavior()
-              .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
+            .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
         }
       }
       autoMappingsCache.put(mapKey, autoMapping);
@@ -644,7 +669,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, List<Class<?>> constructorArgTypes, List<Object> constructorArgs, String columnPrefix)
-      throws SQLException {
+    throws SQLException {
     final Class<?> resultType = resultMap.getType();
     final MetaClass metaType = MetaClass.forClass(resultType, reflectorFactory);
     final List<ResultMapping> constructorMappings = resultMap.getConstructorResultMappings();
@@ -777,7 +802,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private Object getNestedQueryMappingValue(ResultSet rs, MetaObject metaResultObject, ResultMapping propertyMapping, ResultLoaderMap lazyLoader, String columnPrefix)
-      throws SQLException {
+    throws SQLException {
     final String nestedQueryId = propertyMapping.getNestedQueryId();
     final String property = propertyMapping.getProperty();
     final MappedStatement nestedQuery = configuration.getMappedStatement(nestedQueryId);

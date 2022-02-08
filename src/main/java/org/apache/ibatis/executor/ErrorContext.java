@@ -16,6 +16,9 @@
 package org.apache.ibatis.executor;
 
 /**
+ * 错误上下文，ErrorContext 类是⼀个错误上下⽂，它能够提前将⼀些背景信息保存下来。这样在真正发⽣错误时，便能将这些背景信
+ * 息提供出来，进⽽给我们的错误排查带来便利。
+ *
  * @author Clinton Begin
  */
 public class ErrorContext {

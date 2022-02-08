@@ -91,6 +91,11 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     }
   }
 
+  /**
+   * SimpleStatementHandler中 parameterize⽅法的实现为空，因为它只需完成字符串替换即可，不需要进⾏参数处理。
+   *
+   * @param statement
+   */
   @Override
   public void parameterize(Statement statement) {
     // N/A

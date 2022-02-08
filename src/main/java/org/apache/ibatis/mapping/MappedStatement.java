@@ -29,6 +29,8 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * MappedStatement是⼀个典型的解析实体类
+ *
  * @author Clinton Begin
  */
 public final class MappedStatement {
@@ -177,8 +179,7 @@ public final class MappedStatement {
     /**
      * Resul sets.
      *
-     * @param resultSet
-     *          the result set
+     * @param resultSet the result set
      * @return the builder
      * @deprecated Use {@link #resultSets}
      */

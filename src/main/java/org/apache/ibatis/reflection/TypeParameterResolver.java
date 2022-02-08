@@ -26,6 +26,8 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
 /**
+ * 范型解析器
+ *
  * @author Iwao AVE!
  */
 public class TypeParameterResolver {
@@ -33,12 +35,10 @@ public class TypeParameterResolver {
   /**
    * Resolve field type.
    *
-   * @param field
-   *          the field
-   * @param srcType
-   *          the src type
+   * @param field   the field
+   * @param srcType the src type
    * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveFieldType(Field field, Type srcType) {
     Type fieldType = field.getGenericType();
@@ -49,12 +49,10 @@ public class TypeParameterResolver {
   /**
    * Resolve return type.
    *
-   * @param method
-   *          the method
-   * @param srcType
-   *          the src type
+   * @param method  the method
+   * @param srcType the src type
    * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
     Type returnType = method.getGenericReturnType();
@@ -65,13 +63,11 @@ public class TypeParameterResolver {
   /**
    * Resolve param types.
    *
-   * @param method
-   *          the method
-   * @param srcType
-   *          the src type
+   * @param method  the method
+   * @param srcType the src type
    * @return The parameter types of the method as an array of {@link Type}s. If they have type parameters in the
-   *         declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * declaration,<br>
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type[] resolveParamTypes(Method method, Type srcType) {
     Type[] paramTypes = method.getGenericParameterTypes();
@@ -230,7 +226,7 @@ public class TypeParameterResolver {
         newParentArgs[i] = parentTypeArgs[i];
       }
     }
-    return noChange ? parentType : new ParameterizedTypeImpl((Class<?>)parentType.getRawType(), null, newParentArgs);
+    return noChange ? parentType : new ParameterizedTypeImpl((Class<?>) parentType.getRawType(), null, newParentArgs);
   }
 
   private TypeParameterResolver() {

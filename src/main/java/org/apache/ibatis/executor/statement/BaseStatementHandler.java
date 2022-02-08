@@ -34,6 +34,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * BaseStatementHandler 作为三个实现类的⽗类，提供了实现类的公共⽅法。并且BaseStatementHandler类使⽤的模板模式在
+ * prepare⽅法中定义了整个⽅法的框架，然后将⼀些与⼦类相关的操作交给其三个⼦类处理。
+ *
  * @author Clinton Begin
  */
 public abstract class BaseStatementHandler implements StatementHandler {

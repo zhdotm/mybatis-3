@@ -38,11 +38,26 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public class DefaultParameterHandler implements ParameterHandler {
 
+  /**
+   * 类型处理器注册表
+   */
   private final TypeHandlerRegistry typeHandlerRegistry;
 
+  /**
+   * MappedStatement对象（包含完整的增删改查节点信息）
+   */
   private final MappedStatement mappedStatement;
+  /**
+   * 参数对象
+   */
   private final Object parameterObject;
+  /**
+   * BoundSql对象，包含sql语句、参数、实参信息
+   */
   private final BoundSql boundSql;
+  /**
+   * 配置信息
+   */
   private final Configuration configuration;
 
   public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
@@ -61,20 +76,26 @@ public class DefaultParameterHandler implements ParameterHandler {
   @Override
   public void setParameters(PreparedStatement ps) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+    //抽出参数列表
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {
       for (int i = 0; i < parameterMappings.size(); i++) {
         ParameterMapping parameterMapping = parameterMappings.get(i);
+        //ParameterMode.OUT是callableStatement的输出参数（CallableStatementHandler#parameterize），在调用之前已经注册，故忽略
         if (parameterMapping.getMode() != ParameterMode.OUT) {
           Object value;
           String propertyName = parameterMapping.getProperty();
+          //从附加参数中取出
           if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
             value = boundSql.getAdditionalParameter(propertyName);
+            //参数为空
           } else if (parameterObject == null) {
             value = null;
+            //参数是基础类型
           } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
             value = parameterObject;
           } else {
+            //参数是复杂类型，取出参数对象的该属性值
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
             value = metaObject.getValue(propertyName);
           }
@@ -84,6 +105,7 @@ public class DefaultParameterHandler implements ParameterHandler {
             jdbcType = configuration.getJdbcTypeForNull();
           }
           try {
+            //statement设置参数值
             typeHandler.setParameter(ps, i + 1, value, jdbcType);
           } catch (TypeException | SQLException e) {
             throw new TypeException("Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);

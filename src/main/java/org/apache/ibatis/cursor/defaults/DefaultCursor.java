@@ -29,6 +29,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
+ * 对DefaultCursor类⽽⾔，结果集中的所有记录都已经存储在了内存中，DefaultCursor类只负责逐⼀给出这些记录⽽已。
  * This is the default implementation of a MyBatis Cursor.
  * This implementation is not thread safe.
  *
@@ -52,18 +53,22 @@ public class DefaultCursor<T> implements Cursor<T> {
   private enum CursorStatus {
 
     /**
+     * 新创建游标，结果集尚未消费
      * A freshly created cursor, database ResultSet consuming has not started.
      */
     CREATED,
     /**
+     * 游标正在被使用，结果集正在被消费
      * A cursor currently in use, database ResultSet consuming has started.
      */
     OPEN,
     /**
+     * 游标已关闭，结果集未被完全消费
      * A closed cursor, not fully consumed.
      */
     CLOSED,
     /**
+     * 游标已关闭，结果集被完全消费
      * A fully consumed cursor, a consumed cursor is always closed.
      */
     CONSUMED
@@ -91,15 +96,24 @@ public class DefaultCursor<T> implements Cursor<T> {
     return rowBounds.getOffset() + cursorIterator.iteratorIndex;
   }
 
+  /**
+   * 返回迭代器
+   *
+   * @return 迭代器
+   */
   @Override
   public Iterator<T> iterator() {
+    //迭代器已经给出
     if (iteratorRetrieved) {
       throw new IllegalStateException("Cannot open more than one iterator on a Cursor");
     }
+    //游标已经关闭
     if (isClosed()) {
       throw new IllegalStateException("A Cursor is already closed.");
     }
+    //设置迭代器已给出状态
     iteratorRetrieved = true;
+    //返回迭代器
     return cursorIterator;
   }
 
@@ -121,14 +135,31 @@ public class DefaultCursor<T> implements Cursor<T> {
     }
   }
 
+  /**
+   * 获取下一个RowBound
+   * 考虑到边界限制（翻页限制），从数据库中获取下个对象
+   *
+   * @return 下一个对象
+   */
   protected T fetchNextUsingRowBound() {
+    //从数据库中获取下个对象
     T result = fetchNextObjectFromDatabase();
+    //如果对象存在但是不满足边界限制，则持续读取数据库结果中的下一个，直到边界其实位置
     while (objectWrapperResultHandler.fetched && indexWithRowBound < rowBounds.getOffset()) {
       result = fetchNextObjectFromDatabase();
     }
     return result;
   }
 
+  /**
+   * 从数据库中获取下个对象
+   * fetchNextObjectFromDatabase⽅法的中⽂含义为“从数据库获取下⼀个对象”，从⽅法名称上看，该⽅法似乎会从数据库中查询
+   * 下⼀条记录。但实际上并⾮如此，该⽅法并不会引发数据库查询操作。因为，在该⽅法被调⽤之前，数据库查询的结果集已经
+   * 完整地保存在了 rsw变量中。fetchNextObjectFromDatabase⽅法只是从结果集中取出下⼀条记录，⽽⾮真正地去数据库查询下⼀
+   * 条记录。
+   *
+   * @return 下个对象
+   */
   protected T fetchNextObjectFromDatabase() {
     if (isClosed()) {
       return null;
@@ -138,6 +169,7 @@ public class DefaultCursor<T> implements Cursor<T> {
       objectWrapperResultHandler.fetched = false;
       status = CursorStatus.OPEN;
       if (!rsw.getResultSet().isClosed()) {
+        //从结果集中取出一条数据将转换成对象，并将其存入objectWrapperResultHandler中
         resultSetHandler.handleRowValues(rsw, resultMap, objectWrapperResultHandler, RowBounds.DEFAULT, null);
       }
     } catch (SQLException e) {

@@ -26,11 +26,12 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 原⽣ SQL语句。指⾮动态语句，语句中可能含“＃{}”占位符，但不含有动态 SQL节点，也不含有“${}”占位符。
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are
  * calculated during startup.
  *
- * @since 3.2.0
  * @author Eduardo Macarron
+ * @since 3.2.0
  */
 public class RawSqlSource implements SqlSource {
 

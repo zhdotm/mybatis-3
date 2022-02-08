@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 基本类型注册表，内部使⽤ Set 维护了所有 Java 基本数据类型的集合
  * @author Clinton Begin
  */
 public class SimpleTypeRegistry {

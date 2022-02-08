@@ -33,6 +33,8 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * SqlRunner类是 MyBatis提供的可以直接执⾏ SQL语句的⼯具类。
+ *
  * @author Clinton Begin
  */
 public class SqlRunner {

@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 方法执行器
+ *
  * @author Clinton Begin
  */
 public class MethodInvoker implements Invoker {
@@ -38,6 +40,15 @@ public class MethodInvoker implements Invoker {
     }
   }
 
+  /**
+   * 执行方法
+   *
+   * @param target
+   * @param args
+   * @return
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   */
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
     try {
@@ -52,6 +63,11 @@ public class MethodInvoker implements Invoker {
     }
   }
 
+  /**
+   * 如果参数是一个的话，获取的是入参类型，如果是多个的话，获取的是出参类型
+   *
+   * @return
+   */
   @Override
   public Class<?> getType() {
     return type;

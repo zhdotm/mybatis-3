@@ -92,7 +92,9 @@ public class CallableStatementHandler extends BaseStatementHandler {
 
   @Override
   public void parameterize(Statement statement) throws SQLException {
+    //通过 registerOutputParameters⽅法中转后调⽤ java.sql.CallableStatement中的输出参数注册⽅法完成输出参数的注册
     registerOutputParameters((CallableStatement) statement);
+    //通过 ParameterHandler接⼜经过多级中转后调⽤ java.sql.PreparedStatement类中的参数赋值⽅法。
     parameterHandler.setParameters((CallableStatement) statement);
   }
 

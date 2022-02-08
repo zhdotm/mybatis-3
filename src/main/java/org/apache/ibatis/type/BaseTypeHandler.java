@@ -24,6 +24,7 @@ import org.apache.ibatis.executor.result.ResultMapException;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 类型处理器的基础实现
  * The base {@link TypeHandler} for references a generic type.
  * <p>
  * Important: Since 3.5.0, This class never call the {@link ResultSet#wasNull()} and
@@ -46,8 +47,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
   /**
    * Sets the configuration.
    *
-   * @param c
-   *          the new configuration
+   * @param c the new configuration
    * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203. This property will remove future.
    */
   @Deprecated
@@ -65,16 +65,16 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
         ps.setNull(i, jdbcType.TYPE_CODE);
       } catch (SQLException e) {
         throw new TypeException("Error setting null for parameter #" + i + " with JdbcType " + jdbcType + " . "
-              + "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. "
-              + "Cause: " + e, e);
+          + "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. "
+          + "Cause: " + e, e);
       }
     } else {
       try {
         setNonNullParameter(ps, i, parameter, jdbcType);
       } catch (Exception e) {
         throw new TypeException("Error setting non null for parameter #" + i + " with JdbcType " + jdbcType + " . "
-              + "Try setting a different JdbcType for this parameter or a different configuration property. "
-              + "Cause: " + e, e);
+          + "Try setting a different JdbcType for this parameter or a different configuration property. "
+          + "Cause: " + e, e);
       }
     }
   }
@@ -111,13 +111,10 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
   /**
    * Gets the nullable result.
    *
-   * @param rs
-   *          the rs
-   * @param columnName
-   *          Column name, when configuration <code>useColumnLabel</code> is <code>false</code>
+   * @param rs         the rs
+   * @param columnName Column name, when configuration <code>useColumnLabel</code> is <code>false</code>
    * @return the nullable result
-   * @throws SQLException
-   *           the SQL exception
+   * @throws SQLException the SQL exception
    */
   public abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;
 

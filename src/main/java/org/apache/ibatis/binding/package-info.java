@@ -14,6 +14,7 @@
  *    limitations under the License.
  */
 /**
+ * binding包是主要⽤来处理 Java⽅法与 SQL语句之间绑定关系的包。
  * Bings mapper interfaces with mapped statements.
  */
 package org.apache.ibatis.binding;

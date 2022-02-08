@@ -24,6 +24,9 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * BoundSql是参数绑定完成后的 SQL语句
+ * BoundSql是 SQL语句中⼀个重要的中间产物，它既存储了转化结束的 SQL信息，又包含了实参信息和⼀些附加的环境信息。
+ *
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content.
  * The SQL may have SQL placeholders "?" and an list (ordered) of an parameter mappings
  * with the additional information for each parameter (at least the property name of the input object to read
@@ -35,10 +38,25 @@ import org.apache.ibatis.session.Configuration;
  */
 public class BoundSql {
 
+  /**
+   * 可能含有?占位符的sql语句
+   */
   private final String sql;
+  /**
+   * 参数映射列表
+   */
   private final List<ParameterMapping> parameterMappings;
+  /**
+   * 实参对象本身
+   */
   private final Object parameterObject;
+  /**
+   * 实参
+   */
   private final Map<String, Object> additionalParameters;
+  /**
+   * additionalParameters的包装对象
+   */
   private final MetaObject metaParameters;
 
   public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {

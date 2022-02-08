@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * ScriptRunner是 MyBatis提供的直接执⾏ SQL脚本的⼯具类，这使得开发者可以直接将整个脚本⽂件提交给 MyBatis 执⾏。
  * This is an internal testing utility.<br>
  * You are welcome to use this class for your own purposes,<br>
  * but if there is some feature/enhancement you need for your own usage,<br>
@@ -85,8 +86,7 @@ public class ScriptRunner {
   /**
    * Sets the escape processing.
    *
-   * @param escapeProcessing
-   *          the new escape processing
+   * @param escapeProcessing the new escape processing
    * @since 3.1.1
    */
   public void setEscapeProcessing(boolean escapeProcessing) {

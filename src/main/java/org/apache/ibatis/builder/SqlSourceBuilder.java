@@ -30,6 +30,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * sqlsource构造器
  * @author Clinton Begin
  */
 public class SqlSourceBuilder extends BaseBuilder {
@@ -40,6 +41,14 @@ public class SqlSourceBuilder extends BaseBuilder {
     super(configuration);
   }
 
+  /**
+   * SqlSourceBuilder 类能够将 DynamicSqlSource 和 RawSqlSource 中的“＃{}”符号替换掉，从⽽将它们转化为StaticSqlSource
+   *
+   * @param originalSql
+   * @param parameterType
+   * @param additionalParameters
+   * @return
+   */
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);

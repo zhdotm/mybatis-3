@@ -75,7 +75,7 @@ public class CglibProxyFactory implements ProxyFactory {
         LogHolder.log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
       }
     } catch (NoSuchMethodException e) {
-      enhancer.setInterfaces(new Class[] { WriteReplaceInterface.class });
+      enhancer.setInterfaces(new Class[]{WriteReplaceInterface.class});
     } catch (SecurityException e) {
       // nothing to do here
     }
@@ -92,12 +92,33 @@ public class CglibProxyFactory implements ProxyFactory {
 
   private static class EnhancedResultObjectProxyImpl implements MethodInterceptor {
 
+    /**
+     * 被代理类
+     */
     private final Class<?> type;
+    /**
+     * 要懒加载的属性map
+     */
     private final ResultLoaderMap lazyLoader;
+    /**
+     * 是否激进懒加载
+     */
     private final boolean aggressive;
+    /**
+     * 懒加载的触发方法，equal、clone、hashcode、tostring（在Configuration类中被初始化）
+     */
     private final Set<String> lazyLoadTriggerMethods;
+    /**
+     * 对象工厂
+     */
     private final ObjectFactory objectFactory;
+    /**
+     * 被代理类构造函数的参数类型列表
+     */
     private final List<Class<?>> constructorArgTypes;
+    /**
+     * 被代理类构造函数的参数列表
+     */
     private final List<Object> constructorArgs;
 
     private EnhancedResultObjectProxyImpl(Class<?> type, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
@@ -118,40 +139,67 @@ public class CglibProxyFactory implements ProxyFactory {
       return enhanced;
     }
 
+    /**
+     * 代理类的拦截方法
+     *
+     * @param enhanced    代理对象本身
+     * @param method      被调用的方法
+     * @param args        被调用的参数
+     * @param methodProxy 用来调用父类的代理
+     * @return 方法返回值
+     * @throws Throwable 异常
+     */
     @Override
     public Object intercept(Object enhanced, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+      //被调用的方法名
       final String methodName = method.getName();
       try {
+        //防止属性并发加载
         synchronized (lazyLoader) {
+          //被调用的是writeReplace方法
           if (WRITE_REPLACE_METHOD.equals(methodName)) {
+            //创建一个原始对象
             Object original;
             if (constructorArgTypes.isEmpty()) {
               original = objectFactory.create(type);
             } else {
               original = objectFactory.create(type, constructorArgTypes, constructorArgs);
             }
+            //将被代理的对象的属性拷贝到新建的对象
             PropertyCopier.copyBeanProperties(type, enhanced, original);
+            //存在懒加载属性
             if (lazyLoader.size() > 0) {
+              //返还CglibSerialStateHolder对象
               return new CglibSerialStateHolder(original, lazyLoader.getProperties(), objectFactory, constructorArgTypes, constructorArgs);
             } else {
+              //返还原始对象
               return original;
             }
           } else {
+            //存在懒加载，且不是finalize方法
             if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
+              //激进懒加载或者包含触发全局加载方法
               if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
+                //完成所有属性懒加载
                 lazyLoader.loadAll();
+                //调用了set方法
               } else if (PropertyNamer.isSetter(methodName)) {
                 final String property = PropertyNamer.methodToProperty(methodName);
+                //使用了set方法之后，该属性不需要懒加载了
                 lazyLoader.remove(property);
+                //调用get方法
               } else if (PropertyNamer.isGetter(methodName)) {
                 final String property = PropertyNamer.methodToProperty(methodName);
+                //懒加载方法包含该属性
                 if (lazyLoader.hasLoader(property)) {
+                  //调用懒加载
                   lazyLoader.load(property);
                 }
               }
             }
           }
         }
+        //执行原方法
         return methodProxy.invokeSuper(enhanced, args);
       } catch (Throwable t) {
         throw ExceptionUtil.unwrapThrowable(t);
@@ -162,12 +210,12 @@ public class CglibProxyFactory implements ProxyFactory {
   private static class EnhancedDeserializationProxyImpl extends AbstractEnhancedDeserializationProxy implements MethodInterceptor {
 
     private EnhancedDeserializationProxyImpl(Class<?> type, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+                                             List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       super(type, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
     }
 
     public static Object createProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+                                     List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       final Class<?> type = target.getClass();
       EnhancedDeserializationProxyImpl callback = new EnhancedDeserializationProxyImpl(type, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
       Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
@@ -183,7 +231,7 @@ public class CglibProxyFactory implements ProxyFactory {
 
     @Override
     protected AbstractSerialStateHolder newSerialStateHolder(Object userBean, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+                                                             List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       return new CglibSerialStateHolder(userBean, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
     }
   }

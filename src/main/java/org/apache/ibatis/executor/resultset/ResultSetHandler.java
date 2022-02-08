@@ -23,14 +23,40 @@ import java.util.List;
 import org.apache.ibatis.cursor.Cursor;
 
 /**
+ * 结果集处理器
+ *
  * @author Clinton Begin
  */
 public interface ResultSetHandler {
 
+  /**
+   * 将Statement的执⾏结果处理为List
+   * 通过 handleResultSets⽅法的名称（Sets为复数形式）也能看出，它能够处理多结果集。在处理多结果集时，我们得到的是两层
+   * 列表，即结果集列表和嵌套在其中的结果列表
+   *
+   * @param stmt
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   <E> List<E> handleResultSets(Statement stmt) throws SQLException;
 
+  /**
+   * 将Statement的执⾏结果处理为Map
+   *
+   * @param stmt
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   <E> Cursor<E> handleCursorResultSets(Statement stmt) throws SQLException;
 
+  /**
+   * 处理存储过程的输出结果
+   *
+   * @param cs
+   * @throws SQLException
+   */
   void handleOutputParameters(CallableStatement cs) throws SQLException;
 
 }
